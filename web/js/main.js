@@ -1,10 +1,10 @@
 'use strict';
 
 var benchmark = require('vdom-benchmark-base');
-var morphdom = require('morphdom');
+var setDOM = require('set-dom');
 
-var NAME = 'morphdom';
-var VERSION = '0.1.10';
+var NAME = 'set-dom';
+var VERSION = '0.2.3';
 
 function renderTree(nodes, parent, depth) {
   var e;
@@ -47,7 +47,7 @@ BenchmarkImpl.prototype.render = function() {
 BenchmarkImpl.prototype.update = function() {
   var e = document.createElement('div');
   renderTree(this.b, e, 0);
-  morphdom(this._root, e);
+  setDOM(this._root, e);
 };
 
 document.addEventListener('DOMContentLoaded', function(e) {

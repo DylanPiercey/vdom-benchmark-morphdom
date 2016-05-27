@@ -1,10 +1,10 @@
 {
   "private": true,
-  "name": "vdom-benchmark-morphdom",
+  "name": "vdom-benchmark-set-dom",
   "version": "0.1.0",
-  "description": "Virtual DOM Benchmark: morphdom",
+  "description": "Virtual DOM Benchmark: set-dom",
   "license": "BSD",
-  "repository": "https://github.com/localvoid/vdom-benchmark-morphdom",
+  "repository": "https://github.com/localvoid/vdom-benchmark-set-dom",
   "author": {
     "name": "Boris Kaul",
     "email": "localvoid@gmail.com",
@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "envify": "~3.4.0",
-    "morphdom": "~0.1.10",
+    "set-dom": "^0.2.3",
     "vdom-benchmark-base": "~0.2.4"
   },
   "devDependencies": {

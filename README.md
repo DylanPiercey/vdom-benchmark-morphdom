@@ -1,8 +1,8 @@
-# vdom-benchmark-morphdom
+# vdom-benchmark-set-dom
 
 [Virtual DOM Benchmark](https://github.com/vdom-benchmark/vdom-benchmark)
 implementation for
-[morphdom](https://github.com/patrick-steele-idem/morphdom) library.
+[set-dom](https://github.com/DylanPiercey/set-dom) library.
 
 ## Development
 
