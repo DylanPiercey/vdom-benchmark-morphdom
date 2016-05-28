@@ -1,64 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-var benchmark = require('vdom-benchmark-base');
-var setDOM = require('set-dom');
-
-var NAME = 'set-dom';
-var VERSION = '0.2.3';
-
-function renderTree(nodes, parent, depth) {
-  var e;
-  for (var i = 0; i < nodes.length; i++) {
-    var n = nodes[i];
-    if (n.children !== null) {
-      e = document.createElement('div');
-      e.id = '' + depth + '_' + n.key;
-      parent.appendChild(e);
-      renderTree(n.children, e, depth + 1);
-    } else {
-      e = document.createElement('span');
-      e.id = '' + depth + '_' + n.key;
-      e.textContent = n.key;
-      parent.appendChild(e);
-    }
-  }
-}
-
-function BenchmarkImpl(container, a, b) {
-  this.container = container;
-  this.a = a;
-  this.b = b;
-  this._root = null;
-}
-
-BenchmarkImpl.prototype.setUp = function() {
-};
-
-BenchmarkImpl.prototype.tearDown = function() {
-  this.container.removeChild(this.container.firstChild);
-};
-
-BenchmarkImpl.prototype.render = function() {
-  this._root = document.createElement('div');
-  renderTree(this.a, this._root, 0);
-  this.container.appendChild(this._root);
-};
-
-BenchmarkImpl.prototype.update = function() {
-  var e = document.createElement('div');
-  renderTree(this.b, e, 0);
-  setDOM(this._root, e);
-};
-
-document.addEventListener('DOMContentLoaded', function(e) {
-  benchmark(NAME, VERSION, BenchmarkImpl);
-}, false);
-
-},{"set-dom":2,"vdom-benchmark-base":5}],2:[function(require,module,exports){
 'use strict'
 
 var NODE_INDEX = '__set-dom-index__'
+var TEXT_TYPE = 3
+var ELEMENT_TYPE = 1
 var HTML_ELEMENT = document.createElement('html')
 var BODY_ELEMENT = document.createElement('body')
 
@@ -100,8 +45,8 @@ function setDOM (prev, next) {
  */
 function setNode (prev, next) {
   // Handle text node update.
-  if (next.nodeName === '#text') {
-    if (prev.nodeName !== '#text') {
+  if (next.nodeType === TEXT_TYPE) {
+    if (prev.nodeType !== TEXT_TYPE) {
       // we have to replace the node.
       prev.parentNode.replaceChild(next, prev)
     } else if (prev.nodeValue !== next.nodeValue) {
@@ -138,24 +83,23 @@ function setNode (prev, next) {
  * @param {Attributes} next - The updated attributes.
  */
 function setAttributes (parent, prev, next) {
-  var i, a, b, attr
+  var i, a, b
 
   // Remove old attributes.
   for (i = prev.length; i--;) {
-    a = prev.item(i)
+    a = prev[i]
     b = next.getNamedItem(a.name)
     if (!b) prev.removeNamedItem(a.name)
   }
 
   // Set new attributes.
   for (i = next.length; i--;) {
-    a = next.item(i)
+    a = next[i]
     b = prev.getNamedItem(a.name)
     if (!b) {
       // Add a new attribute.
-      attr = document.createAttribute(a.name)
-      attr.value = a.value
-      prev.setNamedItem(attr)
+      next.removeNamedItem(a.name)
+      prev.setNamedItem(a)
     } else if (b.value !== a.value) {
       // Update existing attribute.
       b.value = a.value
@@ -173,7 +117,7 @@ function setAttributes (parent, prev, next) {
  * @param {NodeList} nextChildNodes - The updated children.
  */
 function setChildNodes (parent, prevChildNodes, nextChildNodes) {
-  var key, a, b
+  var key, a, b, oldPosition, newPosition
 
   // Convert nodelists into a usuable map.
   var prev = keyNodes(prevChildNodes)
@@ -189,16 +133,17 @@ function setChildNodes (parent, prevChildNodes, nextChildNodes) {
   for (key in next) {
     a = prev[key]
     b = next[key]
-
     if (a) {
       // Update an existing node.
       setNode(a, b)
       // Check if the node has moved in the tree.
-      if (a[NODE_INDEX] === b[NODE_INDEX]) continue
-      // Check if the node has already been repositioned during the diff.
-      if (a.nextSibling === prevChildNodes[b[NODE_INDEX]]) continue
+      oldPosition = a[NODE_INDEX]
+      newPosition = b[NODE_INDEX]
+      if (oldPosition === newPosition) continue
+      // Check if the node has already been properly positioned.
+      if (prevChildNodes[newPosition] === a) continue
       // Reposition node.
-      parent.insertBefore(a, prevChildNodes[b[NODE_INDEX]])
+      prevChildNodes[newPosition] = a
     } else {
       // Append the new node.
       parent.appendChild(b)
@@ -217,11 +162,13 @@ function setChildNodes (parent, prevChildNodes, nextChildNodes) {
  */
 function keyNodes (childNodes) {
   var result = {}
+
   for (var i = childNodes.length, el; i--;) {
     el = childNodes[i]
     el[NODE_INDEX] = i
     result[getKey(el) || i] = el
   }
+
   return result
 }
 
@@ -235,11 +182,11 @@ function keyNodes (childNodes) {
  * @return {String}
  */
 function getKey (node) {
-  if (typeof node.getAttribute !== 'function') return
+  if (node.nodeType !== ELEMENT_TYPE) return
   return node.id || node.getAttribute('data-key')
 }
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 'use strict';
 
 var Executor = require('./executor');
@@ -305,7 +252,7 @@ Benchmark.prototype.run = function(iterations) {
 
 module.exports = Benchmark;
 
-},{"./executor":4}],4:[function(require,module,exports){
+},{"./executor":3}],3:[function(require,module,exports){
 'use strict';
 
 function render(nodes) {
@@ -457,7 +404,7 @@ Executor.prototype.iter = function() {
 
 module.exports = Executor;
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var Benchmark = require('./benchmark');
@@ -586,7 +533,64 @@ if (!window.performance.now){
 
 module.exports = init;
 
-},{"./benchmark":3}]},{},[1])
+},{"./benchmark":2}],5:[function(require,module,exports){
+'use strict';
+
+var benchmark = require('vdom-benchmark-base');
+var setDOM = require('set-dom');
+
+var NAME = 'set-dom';
+var VERSION = '0.2.4';
+
+function renderTree(nodes, parent, depth) {
+  var e;
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    if (n.children !== null) {
+      e = document.createElement('div');
+      e.id = '' + depth + '_' + n.key;
+      parent.appendChild(e);
+      renderTree(n.children, e, depth + 1);
+    } else {
+      e = document.createElement('span');
+      e.id = '' + depth + '_' + n.key;
+      e.textContent = n.key;
+      parent.appendChild(e);
+    }
+  }
+}
+
+function BenchmarkImpl(container, a, b) {
+  this.container = container;
+  this.a = a;
+  this.b = b;
+  this._root = null;
+}
+
+BenchmarkImpl.prototype.setUp = function() {
+};
+
+BenchmarkImpl.prototype.tearDown = function() {
+  this.container.removeChild(this.container.firstChild);
+};
+
+BenchmarkImpl.prototype.render = function() {
+  this._root = document.createElement('div');
+  renderTree(this.a, this._root, 0);
+  this.container.appendChild(this._root);
+};
+
+BenchmarkImpl.prototype.update = function() {
+  var e = document.createElement('div');
+  renderTree(this.b, e, 0);
+  setDOM(this._root, e);
+};
+
+document.addEventListener('DOMContentLoaded', function(e) {
+  benchmark(NAME, VERSION, BenchmarkImpl);
+}, false);
+
+},{"set-dom":1,"vdom-benchmark-base":4}]},{},[5])
 
 
 //# sourceMappingURL=main.js.map
