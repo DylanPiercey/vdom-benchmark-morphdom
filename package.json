@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "vdom-benchmark-set-dom",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Virtual DOM Benchmark: set-dom",
   "license": "BSD",
   "repository": "https://github.com/localvoid/vdom-benchmark-set-dom",
@@ -22,17 +22,17 @@
   ],
   "dependencies": {
     "envify": "~3.4.1",
-    "set-dom": "^2.0.2",
+    "set-dom": "^5.0.2",
     "vdom-benchmark-base": "~0.2.4"
   },
   "devDependencies": {
-    "browser-sync": "^2.16.0",
+    "browser-sync": "^2.17.5",
     "browserify": "^13.1.0",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-gh-pages": "~0.5.4",
     "gulp-if": "^2.0.1",
-    "gulp-sourcemaps": "^1.6.0",
+    "gulp-sourcemaps": "^2.1.1",
     "gulp-uglify": "^2.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

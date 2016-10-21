@@ -4,7 +4,7 @@ var benchmark = require('vdom-benchmark-base')
 var setDOM = require('set-dom')
 
 var NAME = 'set-dom'
-var VERSION = '0.2.3'
+var VERSION = require('../../package.json').dependencies['set-dom']
 
 function renderTree (nodes, parent, depth) {
   var e

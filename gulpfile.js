@@ -15,7 +15,7 @@ var browserSync = require('browser-sync')
 var reload = browserSync.reload
 
 var NODE_ENV = process.env.NODE_ENV || 'development'
-var BROWSERSYNC_PORT = parseInt(process.env.BROWSERSYNC_PORT) || 3000
+var BROWSERSYNC_PORT = parseInt(process.env.BROWSERSYNC_PORT, 10) || 3000
 var RELEASE = (NODE_ENV === 'production')
 var DEST = './build'
 
