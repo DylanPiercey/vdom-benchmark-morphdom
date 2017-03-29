@@ -722,13 +722,55 @@ if (!window.performance.now){
 module.exports = init;
 
 },{"./benchmark":3}],6:[function(require,module,exports){
+module.exports={
+  "private": true,
+  "name": "vdom-benchmark-set-dom",
+  "version": "0.2.0",
+  "description": "Virtual DOM Benchmark: set-dom",
+  "license": "BSD",
+  "repository": "https://github.com/localvoid/vdom-benchmark-set-dom",
+  "author": {
+    "name": "Boris Kaul",
+    "email": "localvoid@gmail.com",
+    "url": "https://github.com/localvoid"
+  },
+  "keywords": [
+    "virtual",
+    "dom",
+    "virtualdom",
+    "vdom",
+    "diff",
+    "browser",
+    "benchmark",
+    "vdom-benchmark"
+  ],
+  "dependencies": {
+    "envify": "~4.0.0",
+    "set-dom": "^7.4.0",
+    "vdom-benchmark-base": "~0.2.4"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "browserify": "^14.1.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-gh-pages": "~0.5.4",
+    "gulp-if": "^2.0.2",
+    "gulp-sourcemaps": "^2.5.0",
+    "gulp-uglify": "^2.1.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
+
+},{}],7:[function(require,module,exports){
 'use strict'
 
 var benchmark = require('vdom-benchmark-base')
 var setDOM = require('set-dom')
 
 var NAME = 'set-dom'
-var VERSION = '8.0.0'
+var VERSION = require('../../package.json').dependencies['set-dom']
 
 function renderTree (nodes, parent, depth) {
   var e
@@ -777,6 +819,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
   benchmark(NAME, VERSION, BenchmarkImpl)
 }, false)
 
-},{"set-dom":1,"vdom-benchmark-base":5}]},{},[6])
+},{"../../package.json":6,"set-dom":1,"vdom-benchmark-base":5}]},{},[7])
 
 //# sourceMappingURL=main.js.map
