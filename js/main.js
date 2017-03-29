@@ -62,10 +62,8 @@ function setNode (oldNode, newNode) {
   if (oldNode.nodeType === newNode.nodeType) {
     // Handle regular element node updates.
     if (oldNode.nodeType === ELEMENT_TYPE) {
-      // Ignore elements if their checksum matches.
-      if (getCheckSum(oldNode) === getCheckSum(newNode)) return
-      // Ignore elements that explicity choose not to be diffed.
-      if (isIgnored(oldNode) && isIgnored(newNode)) return
+      // Checks if nodes are equal before diffing.
+      if (isEqualNode(oldNode, newNode)) return
 
       // Update all children (and subchildren).
       setChildNodes(oldNode, newNode)
@@ -221,6 +219,25 @@ function getKey (node) {
   if (node.nodeType !== ELEMENT_TYPE) return
   var key = node.getAttribute(setDOM.KEY) || node.id
   if (key) return KEY_PREFIX + key
+}
+
+/**
+ * Checks if nodes are equal using the following by checking if
+ * they are both ignored, have the same checksum, or have the
+ * same contents.
+ *
+ * @param {Node} a - One of the nodes to compare.
+ * @param {Node} b - Another node to compare.
+ */
+function isEqualNode (a, b) {
+  return (
+    // Check if both nodes are ignored.
+    (isIgnored(a) && isIgnored(b)) ||
+    // Check if both nodes have the same checksum.
+    (getCheckSum(a) === getCheckSum(b)) ||
+    // Fall back to native isEqualNode check.
+    a.isEqualNode(b)
+  )
 }
 
 /**
@@ -705,55 +722,13 @@ if (!window.performance.now){
 module.exports = init;
 
 },{"./benchmark":3}],6:[function(require,module,exports){
-module.exports={
-  "private": true,
-  "name": "vdom-benchmark-set-dom",
-  "version": "0.2.0",
-  "description": "Virtual DOM Benchmark: set-dom",
-  "license": "BSD",
-  "repository": "https://github.com/localvoid/vdom-benchmark-set-dom",
-  "author": {
-    "name": "Boris Kaul",
-    "email": "localvoid@gmail.com",
-    "url": "https://github.com/localvoid"
-  },
-  "keywords": [
-    "virtual",
-    "dom",
-    "virtualdom",
-    "vdom",
-    "diff",
-    "browser",
-    "benchmark",
-    "vdom-benchmark"
-  ],
-  "dependencies": {
-    "envify": "~4.0.0",
-    "set-dom": "^7.3.3",
-    "vdom-benchmark-base": "~0.2.4"
-  },
-  "devDependencies": {
-    "browser-sync": "^2.18.8",
-    "browserify": "^14.1.0",
-    "del": "^2.2.2",
-    "gulp": "^3.9.1",
-    "gulp-gh-pages": "~0.5.4",
-    "gulp-if": "^2.0.2",
-    "gulp-sourcemaps": "^2.4.1",
-    "gulp-uglify": "^2.1.2",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
-  }
-}
-
-},{}],7:[function(require,module,exports){
 'use strict'
 
 var benchmark = require('vdom-benchmark-base')
 var setDOM = require('set-dom')
 
 var NAME = 'set-dom'
-var VERSION = require('../../package.json').dependencies['set-dom']
+var VERSION = '8.0.0'
 
 function renderTree (nodes, parent, depth) {
   var e
@@ -802,6 +777,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
   benchmark(NAME, VERSION, BenchmarkImpl)
 }, false)
 
-},{"../../package.json":6,"set-dom":1,"vdom-benchmark-base":5}]},{},[7])
+},{"set-dom":1,"vdom-benchmark-base":5}]},{},[6])
 
 //# sourceMappingURL=main.js.map
