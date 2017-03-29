@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "envify": "~4.0.0",
-    "set-dom": "^7.3.3",
+    "set-dom": "^7.4.0",
     "vdom-benchmark-base": "~0.2.4"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "gulp": "^3.9.1",
     "gulp-gh-pages": "~0.5.4",
     "gulp-if": "^2.0.2",
-    "gulp-sourcemaps": "^2.4.1",
+    "gulp-sourcemaps": "^2.5.0",
     "gulp-uglify": "^2.1.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
